@@ -17,7 +17,7 @@
 \usepackage{mathrsfs}
 \usepackage{tikz}
 \usetikzlibrary{shapes}
-\usepackage{times}
+%\usepackage{times}
 \newcommand{\hide}[1]{}
 
 \newcommand{\eval}[2]{\llbracket#1\rrbracket_{#2}}
@@ -27,9 +27,10 @@
 
 \newcommand{\yfc}[1]{\color{blue} {YF: #1 :FY} \color{black}}
 \newcommand{\zhilin}[1]{\color{cyan} {ZL: #1 :LZ} \color{black}}
+\newcommand{\tl}[1]{\color{green} {TL: #1 :LT} \color{black}}
 
-\title{The~Commutativity~Problem~of~the~MapReduce Framework: A Transducer-based Approach}
-\titlerunning{Commutativity of MapReduce: A Transducer-based Approach}
+\title{MapReduce Framework: Uninterpreted functions}
+\titlerunning{}
 \author{}
 \institute{}
 
@@ -45,12 +46,20 @@ We use $B$ and $U$ to denote the set of all uninterpreted binary and unary funct
 Let $E(X, B, U)$ be the set of expressions over variables $X$, $B$, and $U$.
 A guard over $X^+$ is a predicate defined by $g:= p(x_1,\ldots,x_n) \mid \neg g \mid g\wedge g$, where $x_1,\ldots,x_n\in X^+$ and $p$ is an uninterpreted predicate over $x_1,\ldots,x_n$. 
 
-A SNT $S$ is a tuple $(Q, X, \delta, q_0, O)$ where $Q$ is a finite set of states, $X$ is a finite set of variables, $\delta$ is the set of transitions, $q_0 \in Q$ is the initial state, $O$ is the output function, which is a partial function from $Q$ to $E(X,B, U)$
-The set of transitions $\delta$ comprises the tuples $(q, g, \eta, q')$, where $q,q'\in Q$, $g$ is a guard over $X^+$ or , $\eta$ is an assignment which is a partial function mapping $X$  to $E(X,B, U)$. We write $q \xrightarrow{(g,\eta)} q'$ to denote $(q,g,\eta,q') \in \delta$ for convenience. 
+\begin{definition}
+An SNT $S$ is a tuple $(Q, X, \delta, q_0, O)$ where 
+\begin{itemize}
+\item $Q$ is a finite set of states, 
+\item $X$ is a finite set of variables,  
+\item $q_0 \in Q$ is the initial state, 
+\item $O$ is the output function, which is a partial function from $Q$ to $E(X,B, U)$,
+\item $\delta$ is the set of transitions,  The set of transitions $\delta$ comprises the tuples $(q, g, \eta, q')$, where $q,q'\in Q$, $g$ is a guard over $X^+$ or , $\eta$ is an assignment which is a partial function mapping $X$  to $E(X,B, U)$. We write $q \xrightarrow{(g,\eta)} q'$ to denote $(q,g,\eta,q') \in \delta$ for convenience. 
+\end{itemize}
+\end{definition}
 
 Moreover, we assume that an SNT $S$ satisfies the following constraints. (1) \emph{Deterministic:} For each pair of distinct transitions originating from $q$, say $(q, g_1, \eta_1,q'_1)$ and $(q, g_2,\eta_2,q'_2)$, it holds that $g_1 \wedge g_2$ is unsatisfiable and (2) \emph{Generalized flat:} Each SCC (strongly connected component) of the transition graph of $S$ is either a single state or a set of simple cycles $\{C_1,\dots, C_n\}$ which contains a state $q$ such that for each $i,j: 1 \le i < j \le n$, $q$ is the \emph{only} state shared by $C_i$.
 
-The semantics of an SNT $S$  is defined as follows. A \emph{configuration} of $S$ is a pair $(q,\rho)$, where $q \in Q$ and $\rho$ is a valuation of $X$. The \emph{initial} configuration of $S$ is $(q_0,\rho_0)$, where $\rho_0(z)=z_0$ for each $z \in X$.
+The semantics of an SNT $S$  is defined as follows. A \emph{configuration} of $S$ is a pair $(q,\rho)$, where $q \in Q$ and $\rho$ is a valuation of $X$. The \emph{initial} configuration of $S$ is $(q_0,\rho_0)$, where $\rho_0(z)=z_0$ for each $z \in X$. \tl{what's $z_0$?}
 A sequence of configurations $(q_0,\rho_0)(q_1,\rho_1)\ldots(q_n,\rho_n)$ is
 a \emph{run} of $S$ over a data word $w=d_1 \dots d_n$ iff there exists a path (sequence of transitions) $q_0 \xrightarrow{(g_1,\eta_1)} q_1 \xrightarrow{(g_2,\eta_2)} q_2 \dots q_{n-1} \xrightarrow{(g_n, \eta_n)} q_n$ such that for each $i \in [n]$, $\rho_{i-1}[d_i/\cur] \models g_i$, and $\rho_i$ is obtained from $\rho_{i-1}$ as follows: For each $x \in X$, if $x \in \dom(\eta_i)$, then $\rho_i(x)=\eval{\eta_i(x)}{\rho_{i-1}[d_i/\cur]}$, otherwise, $\rho_i(x)=\rho_{i-1}(x)$.
 We call $(q_n,\rho_n)$ the \emph{final configuration} of the run. %We say that $(q_i,\rho_i)$ is \emph{reachable} from $(q_0,\rho_0)$, for $i \in [n]$.
@@ -59,6 +68,25 @@ We would like to remark that for each data word $w$, there is at most one run of
 Over a data word $w = d_1 \dots d_n$, if there is a run of $S$ over $w$ with the final configuration $(q_n,\rho_n)$, and $O(q_n)$ is defined, then the output of $S$ over $w$, denoted by ${S}(w)$, is $\eval{O(q_n)}{\rho_n}$. Otherwise, ${S}(w)$ is $\bot$.
 
 We focus on three decision problems of SNTs: (1) \emph{Commutativity}: Given an SNT $S$, decide whether $S$ is commutative, that is, whether for each data word $w$ and each permutation $w'$ of $w$, $S(w)=S(w')$. (2) \emph{Equivalence}: Given two SNTs $S_1,S_2$, decide whether $S_1$ and $S_2$ are equivalent, that is, whether over each data word $w$, $S_1(w)=S_2(w)$.
+
+\section{Follow-up discussion}
+
+If recall correctly, we have discussed the simple case that there is a simple loop for SNT. The aim is to generate a ``satisfactory representation" of the output function. At a very high level, we have two possible ways to attack the equivalence problem:
+\begin{itemize}
+\item to represent the output of the SNT $S$ by some formalism and then compare the two formalisms obtained from $S_1$ and $S_2$;
+
+\item to first derive a bound $N$ on the length of the unfolded loop, and then for each $1\leq i\leq N$, obtain two finite expressions of the output, say, $S_1^{(i)}$ and $S_2^{(i)}$, and compare these two expressions. 
+\end{itemize}
+
+We have not really explored the second way. For the first way, we somehow came up with the following sketch:
+\begin{itemize}
+\item step 1: construct the \emph{nominal} output;
+\item step 2: from the nominal output, one can generate a set of concrete outputs;
+\item step 3: for two sets of generated concrete outputs $R_1$ and $R_2$, one has to establish a  mapping $f: R_1\rightarrow R_2$ and check whether for each $r\in R_1$, $r=_{\rm AC} f(r)$ and vice verse. 
+\end{itemize}
+
+For me this sketch suffers from several problems: (1) the nominal output must be parameterised on the length of the input data word $w$, and this is somehow not very elegant. We have discussed to generate the nominal outputs by context-free grammar or tree rewriting (!?), but neither is very clear to me. (2) the aforementioned mapping (or I should put one-to-one correspondence) is not quite easy to obtain. I vaguely remembered that we mentioned that $r$ and $f(r)$ can be defined to follow the same order of data. 
+
 \bibliographystyle{abbrv}
 \bibliography{data}
 
