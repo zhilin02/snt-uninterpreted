@@ -65,63 +65,49 @@ In this note, as a starting point, we try to outline a model called streaming da
 For each $n \in \nat$, let $[n]=\{1,\dots, n\}$.
 
 An infinite data domain $\dd$ is fixed.
-A ranked alphabet $F$ is a finite set of function symbols, each of which has a fixed arity. The arity-0 symbols are called constants, are mapped to the elements in the data domain. Since infinite data domains are allowed, we need a way of encoding the constants as strings a finite set of symbols (e.g. \{0,1\}), but we will not go into details here. In addition, we assume a  countable set $X$ of variables $x_1, x_2,\dots$ ranging over $\dd$.  The set of terms over $F$ and a set of variables $Z \subseteq X$, denoted by $T_{F, Z}$, can defined in a standard way, more specifically, by the grammar $t::= c \mid z  \mid f(t_1,\dots, t_k)$, where $c$ is a constant symbol in $F$, $z \in Z$, and $f \in F$ is a function symbol in $F$ of arity $k$. A \emph{data grammar} $G$ is a pair $(F, T)$, where $F$ is a ranked alphabet, $T \subseteq T_{F,X}$ such that for each finite set of variables $Z \subseteq X$, $T \cap T_{F, Z}$ is a regular tree language over the alphabet $F \cup Z$, where each element of $Z$ is taken as the arity-0 symbols.  For convenience, for a set of terms $T \subseteq T_{F,X}$ and $Z \subseteq X$, we use $T \vert_Z$ to denote $T \cap T_{F,Z}$.  For $Z \subseteq X$, a \emph{valuation} of $Z$ is a function $\rho$ from $Z$ to $\dd$. 
+A ranked alphabet $F$ is a finite set of function symbols, each of which has a fixed arity. The arity-0 symbols are called constants, are mapped to the elements in the data domain. Since infinite data domains are allowed, we need a way of encoding the constants as strings as a finite set of symbols (e.g. the set of symbols is $\{0,1\}$, and $3$ is encoded as $11$), but we will not go into details here. In addition, we assume a  finite set of variables $X$ ranging over $\dd$.  The set of terms over $F$ and $X$, denoted by $T_{F, X}$, can defined in a standard way, more specifically, by the grammar $t::= c \mid x  \mid f(t_1,\dots, t_k)$, where $c$ is a constant symbol in $F$, $x \in X$, and $f \in F$ is a function symbol in $F$ of arity $k$. A \emph{data grammar} $G$ is a pair $(F, T)$, where $F$ is a ranked alphabet, $T \subseteq T_{F,X}$ such that $T$ is a regular tree language over the alphabet $F \cup X$, where each element of $X$ is taken as the arity-0 symbols.  A \emph{valuation} of $Z$ is a function $\rho$ from $Z$ to $\dd$. For a valuation $\rho$ of $X$, $x \in X$, and $d \in \dd$, we use $\rho[d/x]$ to denote the valuation which is the same as $\rho$, except assigning $d$ to $x$.
 
 \begin{example}
-Additive-grammar $G(+)$: $t ::= c \mid x \mid +(t,t)$, increment-grammar $t ::= c \mid x \mid +(t,c)$, max-increment-grammar $t ::= c \mid x \mid \max(t_1, t_2) \mid +(t,c)$, data grammar $G(\otimes)$: $t ::= 0 \mid x \mid \otimes(t,t)$, where $0$ is a constant and $\otimes$ is an arity-2 symbol. 
+Here are a few examples of data grammars.
+\begin{itemize}
+\item Additive grammar $G_+=(F, T)$, where $F=\{c_1,\dots, c_k, +\}$ and $T=T_{F,X}$. 
+
+\item Increment grammar $G_{\sf inc} = (F, T)$, where $F=\{c_1,\dots, c_k, +\}$, and $T$ is defined by the rules $t ::= c_i \mid x \mid +(t, c_i)$ (here $c_i \in F$ and $x \in X$). 
+
+\item Max-increment grammar $G_{\sf max-inc} = (F, T)$, where $F=\{c_1,\dots, c_k, \max, +\}$, and $T$ is defined by the rules $t ::= c_i \mid x \mid \max(t_1, t_2) \mid +(t,c_i)$ (here $c_i \in F$ and $x \in X$). 
+
+\item Data grammar $G_\otimes = (F,T)$, where $F=\{0, \otimes\}$ (here $0$ is a constant and $\otimes$ is an arity-2 symbol), and $T=T_{F,X}$. 
+\end{itemize}
 \end{example}
 
-Given a data grammar $G=(F, T)$, a \emph{data model} is a triple $(G, \dd, \llbracket \cdot \rrbracket)$, where $\dd$ is a data domain,  for each constant $c \in F$, $\llbracket c\rrbracket \in \dd$, and for each arity-$k$ ($k > 0$) function symbol $f \in F$, $\llbracket f \rrbracket $ is a function from $\dd^k$ to $\dd$. Suppose $Z \subseteq X$, $t \in T|_Z$, and $\rho$ is a valuation of $Z$. Then $t$ naturally defines a data value from $\dd$ w.r.t. $\llbracket \cdot \rrbracket$ and $\rho$ (this data value is denoted by $\eval{t}{\rho}$).
-
+Given a data grammar $G=(F, T)$, a \emph{data model} is a triple $(G, \dd, \llbracket \cdot \rrbracket)$, where $\dd$ is a data domain,  for each constant $c \in F$, $\llbracket c\rrbracket \in \dd$, and for each arity-$k$ ($k > 0$) function symbol $f \in F$, $\llbracket f \rrbracket $ is a function from $\dd^k$ to $\dd$. 
 
 \begin{example}
-$(G(+), \nat, +)$ denote the data model where $\dd=\nat$ and $+$ is interpreted as the standard addition operation. Monoid data model $(G(\otimes), \dd, \otimes)$ where $(\dd, 0, \otimes)$ is a monoid (this means that $\otimes$ is an associate operation). Note that the monoid $(\dd, 0, \otimes)$ in the monoid data model can be instantiated as $(\Sigma^\ast, \varepsilon, \cdot)$, where $\cdot$ denotes the string concatenation operation. Commutative-monoid data model $(G(\otimes), \dd, \otimes)$ where $(\dd, 0, \otimes)$ is a commutative monoid (this means that $\otimes$ is an associate and commutative operation). The commutative-monoid  $(\dd, 0, \otimes)$ can be instantiated as $(\nat, 0, +)$, and $(\nat, 1, \times)$. 
+$(G_+, \nat, \llbracket \cdot \rrbracket)$ denotes the data model where $\dd=\nat$ and $\llbracket + \rrbracket$ is interpreted as the standard addition operation. Monoid data model $(G_\otimes, \dd, \llbracket \cdot \rrbracket)$ where $(\dd, 0, \llbracket \otimes \rrbracket)$ is a monoid (this means that $ \llbracket \otimes \rrbracket$ is an associative operation on $\dd$). In particular, the monoid $(\dd, 0, \llbracket \otimes \rrbracket)$ in the monoid data model can be instantiated as $(\Sigma^\ast, \varepsilon, \cdot)$, where $\cdot$ denotes the string concatenation operation. Commutative-monoid data model $(G_\otimes, \dd, \llbracket \cdot \rrbracket)$ where $(\dd, 0, \llbracket \otimes \rrbracket)$ is a commutative monoid (this means that $\llbracket \otimes \rrbracket$ is an associative and commutative operation). The commutative-monoid  $(\dd, 0, \llbracket \otimes \rrbracket)$ can be instantiated as $(\nat, 0, +)$, and $(\nat, 1, \times)$. 
 \end{example}
+
+Suppose $t \in T$, and $\rho$ is a valuation of $Z$. Then $t$ naturally defines a data value in $\dd$ w.r.t. $\llbracket \cdot \rrbracket$ and $\rho$ (this data value is denoted by $\eval{t}{\rho}$). For instance, in the data model $(G_+, \nat, \llbracket \cdot \rrbracket)$ where $\llbracket + \rrbracket$ is the addition operation on $\nat$, if $\rho(x) = 5$, then $\eval{+(2,x)}{\rho}=7$.
+
  
 \section{Streaming data transducer (SDT)}
 
-We assume that $X$ contains a special variable $\cur$ which is used to denote the data value in the current position. For a set of variables $Z \subseteq X \setminus \{\cur\}$, we use $Z^+$ to denote $Z \cup \{\cur\}$.
+We assume that $X$ contains a special variable $\cur$ to denote the data value in the current position. 
 
-A streaming data transducer (SDT) over a cost model $(G=(F, T), \dd, \llbracket \cdot \rrbracket)$ is a tuple $(Q, Z, \delta, q_0, O)$, where 
+%We use $X^+$ to denote $X \cup \{\cur\}$.
+
+A streaming data transducer (SDT) over a data model $(G=(F, T), \dd, \llbracket \cdot \rrbracket)$ is a tuple $(Q, X, \delta, q_0, O)$, where 
 \begin{itemize}
 \item $Q$ is a finite set of states, 
 
-\item $Z \subseteq X \setminus \{\cur\}$ is a finite set of variables, 
+\item $X$ is a finite set of variables such that $\cur \in X$, 
 
-\item $\delta$ is a partial function which maps a state $q \in Q$ a tuple $(q',\eta)$  such that $q' \in Q$ and $\eta$ is an assignment function which assigns to each $z \in Z$ a term $\eta(z) \in T \vert_{Z^+}$, 
+\item $\delta$ is a partial function which maps a state $q \in Q$ to a tuple $(q',\eta)$  such that $q' \in Q$ and $\eta$ is an assignment function which assigns to each $x \in X$ a term $\eta(x) \in T$, 
 
 \item $q_0 \in Q$ is the initial state, 
 
-\item $O$ is the output function which is a partial function such that for each $q \in \dom(O)$, $O(q) \in T \vert_Z$ is a term denoting the output.
+\item $O$ is the output function which is a partial function such that for each $q \in \dom(O)$, $O(q) \in T$ is a term denoting the output where the variable $\cur$ does not occur.
 \end{itemize}
 Note that since an SDT $\Ss$ defined above is required to be deterministic and the guards are disallowed at present, the shape of the transition graph of $\Ss$ is either a simple path or a lasso. For convenience, we write a transition $\delta(q) = (q',\eta)$ as $q \xrightarrow{\eta} q'$.
-
-
-%%%%%%%%%%%%%%%Original text by Yu-Fang %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%Original text by Yu-Fang %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\hide{
-Let $X^+$ be the set $X\cup \{ \cur \}$.
-We use $B$ and $U$ to denote the set of all uninterpreted binary and unary functions, respectively. For the set of binary functions, we use subscripted $A$ and $C$ to denote the set of associative and commutative binary functions, respectively. Notice that we have $B_{AC}\subset B_A \subset B$ and $B_{AC}\subset B_C \subset B$.
-Let $E(X, B, U)$ be the set of expressions over variables $X$, $B$, and $U$.
-A guard over $X^+$ is a predicate defined by $g:= p(x_1,\ldots,x_n) \mid \neg g \mid g\wedge g$, where $x_1,\ldots,x_n\in X^+$ and $p$ is an uninterpreted predicate over $x_1,\ldots,x_n$. 
-
-\zhilin{SNTs with uninterpreted functions (SNT$_{\rm UF}$) in my mind are as follows: As in the CAV paper, the set of variables are still distinguished into the set of control variables $X$ and the set of data variables $Y$. The control variables can occur in guards $g::= \cur\ o\ x \mid g \wedge g$, where $x \in X$ and $o \in \{<, \ge \}$ or $o \in \{\ge, >\}$. Each control variable $x$ is updated by assigning $\cur$ or another control variable to it. On the other hand, each data variable is updated by assigning to it a term built up with uninterpreted functions, $t::= \cur \mid x \mid y \mid f_1(t) \mid f_2(t_1, t_2)$, where $f_1 \in U, f_2 \in B$. At present,  I do not see some strong motivations to introduce uninterpreted predicates in guards, except the $ite(., ., .)$ mentioned by Yu-fang. We use SNT$^1_{\rm UF}$ to denote SNT$_{\rm UF}$ where only one binary function symbol is available.}
-
-\begin{definition}
-An SNT $S$ is a tuple $(Q, X, \delta, q_0, O)$ where 
-\begin{itemize}
-\item $Q$ is a finite set of states, 
-\item $X$ is a finite set of variables,  
-\item $q_0 \in Q$ is the initial state, 
-\item $O$ is the output function, which is a partial function from $Q$ to $E(X,B, U)$,
-\item $\delta$ is the set of transitions,  The set of transitions $\delta$ comprises the tuples $(q, g, \eta, q')$, where $q,q'\in Q$, $g$ is a guard over $X^+$ or , $\eta$ is an assignment which is a partial function mapping $X$  to $E(X,B, U)$. We write $q \xrightarrow{(g,\eta)} q'$ to denote $(q,g,\eta,q') \in \delta$ for convenience. 
-\end{itemize}
-\end{definition}
-
-Moreover, we assume that an SNT $S$ satisfies the following constraints. (1) \emph{Deterministic:} For each pair of distinct transitions originating from $q$, say $(q, g_1, \eta_1,q'_1)$ and $(q, g_2,\eta_2,q'_2)$, it holds that $g_1 \wedge g_2$ is unsatisfiable and (2) \emph{Generalized flat:} Each SCC (strongly connected component) of the transition graph of $S$ is either a single state or a set of simple cycles $\{C_1,\dots, C_n\}$ which contains a state $q$ such that for each $i,j: 1 \le i < j \le n$, $q$ is the \emph{only} state shared by $C_i$.
-}
-%%%%%%%%%%%%%%%Original text by Yu-Fang %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%Original text by Yu-Fang %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 The semantics of an SDT $S = (Q, Z, \delta, q_0, O)$  is defined as follows. We assume that the data domain $\dd$ always contain a special constant $0$. A \emph{configuration} of $S$ is a pair $(q, \rho)$, where $q \in Q$ and $\rho$ is a valuation of $Z$. The \emph{initial} configuration of $S$ is $(q_0,\rho_0)$, where $\rho_0(z)=0$ for each $z \in X$. A sequence of configurations $(q_0,\rho_0)(q_1,\rho_1)\ldots(q_n,\rho_n)$ is
@@ -135,20 +121,20 @@ We call $(q_n,\rho_n)$ the \emph{final configuration} of the run. %We say that $
 We would like to remark that for each data word $w$, there is at most one run of $S$ over $w$, since $S$ is deterministic. 
 Over a data word $w = d_1 \dots d_n$, if there is a run of $S$ over $w$ with the final configuration $(q_n,\rho_n)$, and $O(q_n)$ is defined, then the output of $S$ over $w$, denoted by ${S}(w)$, is $\eval{O(q_n)}{\rho_n}$. Otherwise, ${S}(w)$ is $\bot$.
 
-We focus on three decision problems of SNTs: (1) \emph{Commutativity}: Given an SNT $S$, decide whether $S$ is commutative, that is, whether for each data word $w$ and each permutation $w'$ of $w$, $S(w)=S(w')$. (2) \emph{Equivalence}: Given two SNTs $S_1,S_2$, decide whether $S_1$ and $S_2$ are equivalent, that is, whether over each data word $w$, $S_1(w)=S_2(w)$.
+We focus on three decision problems of SDTs: (1) \emph{Commutativity}: Given an SDT $S$, decide whether $S$ is commutative, that is, whether for each data word $w$ and each permutation $w'$ of $w$, $S(w)=S(w')$. (2) \emph{Equivalence}: Given two SDTs $S_1,S_2$, decide whether $S_1$ and $S_2$ are equivalent, that is, whether over each data word $w$, $S_1(w)=S_2(w)$.
 
 
 \begin{example}
-If we assume the monoid data model $(G(\otimes), \dd, \otimes)$ where $(\dd, 0, \otimes)$  is interpreted as $(\Sigma^\ast, \varepsilon, \cdot)$, then we get streaming transducers in \cite{RP11} (without guards), whose output are data strings. If we assume the commutative data model $(G(\otimes), \dd, \otimes)$, then we get a model similar to streaming numerical transducers in the cav paper (without guards).
+If we assume the monoid data model $(G_\otimes, \dd, \llbracket \cdot \rrbracket)$ where $(\dd, 0, \llbracket \otimes \rrbracket)$  is interpreted as $(\Sigma^\ast, \varepsilon, \cdot)$, then we get streaming transducers in \cite{RP11} (without guards), whose output are data strings. If we assume the commutative data model $(G_\otimes, \dd, \otimes)$, then we get a model similar to streaming numerical transducers in the cav paper (without guards).
 \end{example}
 
 Since the commutativity problem of SDTs can be reduced the equivalence problem, we focus on the equivalence problem of SDTs in the following.
 
 \section{Equivalence problem: A first dive}
 
-We will try to get some idea on the equivalence problem by considering the special case that the cost grammar $G=(F,T)$, where $F=\{f\}$, where $f$ is an arity-2 function symbol and $T = T_{F,X}$. We will consider free data model where $f$ is an arbitrary binary function on $\dd$, the monoid and commutative-monoid data model, that is, $(\dd, 0, f)$ is a monoid resp. commutative monoid.
+We will try to get some idea on the equivalence problem by considering the special case that the data grammar $G=(F,T)$, where $F=\{f\}$, where $f$ is an arity-2 function symbol and $T = T_{F,X}$. We will consider free data model where $f$ is an arbitrary binary function on $\dd$, the commutative data model where $\llbracket f \rrbracket$ is a commutative binary operation on $\dd$, the monoid and commutative-monoid data model, that is, $(\dd, 0, \llbracket f \rrbracket)$ is a monoid resp. commutative monoid.
 
-Suppose $(G, \dd, \llbracket \cdot \rrbracket)$ is cost model, $\Ss_1 = (Q_1, Z_1, \delta_1, q_{1,0}, O_1)$ and $\Ss_2 = (Q_2, Z_2, \delta_2, q_{2,0}, O_2)$ are two SDTs over $(G, \dd, \llbracket \cdot \rrbracket)$. Without loss of generality, we assume that for $i=1,2$, the transition graph of $\Ss_i$ is a lasso 
+Suppose that $(G, \dd, \llbracket \cdot \rrbracket)$ is data model, $\Ss_1 = (Q_1, Z_1, \delta_1, q_{1,0}, O_1)$ and $\Ss_2 = (Q_2, Z_2, \delta_2, q_{2,0}, O_2)$ are two SDTs over $(G, \dd, \llbracket \cdot \rrbracket)$. Without loss of generality, we assume that for $i=1,2$, the transition graph of $\Ss_i$ is a lasso 
 $$q_{i,0} \xrightarrow{\eta_{i,1}} q_{i, 1}  \dots q_{i, h_i} \xrightarrow{\eta_{i, h_i+1}} q_{i, h_i+1} \dots \xrightarrow{\eta_{i, h_i+p_i}} q_{i, h_i+p_i}$$ 
 such that $q_{i, h_i+p_i}= q_{i, h_i}$. The path $q_{i,0} \xrightarrow{\eta_{i,1}} q_{i, 1}  \dots q_{i, h_i}$ is called the \emph{handle} and $q_{i, h_i} \xrightarrow{\eta_{i, h_i+1}} q_{i, h_i+1} \dots \xrightarrow{\eta_{i, h_i+p_i}} q_{i, h_i+p_i}$ is called the \emph{loop} of the lasso. In addition, $h_i$ and $p_i$ are called the length of the handle and loop respectively.
 
@@ -212,6 +198,8 @@ For each $1 \le j < N'$, define $\dif_{j}$ as $ (\sum \limits_{0 \le j' \le j} |
 Otherwise, for each $j < N'$,  $\dif_j \le D_H$. For each $j < N$ (resp. $j < N'$), let $\var_{1,j} \in Z_1$ (resp. $\var_{2,j} \in Z_2$) denote the variable of $\Ss_1$ (resp. $\Ss_2$) corresponding to the path $\pi_{1,0} \dots \pi_{1,j}$ (resp. $\pi_{2,0} \dots \pi_{2,j}$) respectively. Let us consider the tuples $(\var_{1,j}, \var_{2,j}, \dif_j)$ for $j < N'$. Then these tuples belong to $Z_1 \times Z_2 \times [-D_H, D_H]$. If there are $j_1 < j_2 < N'$ such that $(\var_{1, j_1}, \var_{2, j_1}, \dif_{j_1}) = (\var_{1, j_2}, \var_{2, j_2}, \dif_{j_2})$, then let $N':= N' - (j_2 - j_1)$ and supress the segment $\pi_{1, j_1+1} \dots \pi_{1,j_2}$ from $\Ss_1(w)$ and   $\pi_{2, j_1+1} \dots \pi_{2,j_2}$ from $\Ss_2(w)$ respectively, so that the resulting pair of terms are still different. By doing this, we get a data word $w'$ of shorter length. We can repeat this process until for each $j_1 < j_2 < N'$, $(\var_{1, j_1}, \var_{2, j_1}, \dif_{j_1}) \neq (\var_{1, j_2}, \var_{2, j_2}, \dif_{j_2})$. In addition, we can shorten the segment $\pi_{1,N'+1}\dots \pi_{1, N}$ so that for each $N'+1 \le j_1 < j_2 < N$, $\var_{1,j_1} \neq \var_{1, j_2}$. By doing this, in the end, we get a data word $w'$ of length at most $2D_H |Z_1|  |Z_2| + \max(|Z_1|, |Z_2|)$.
 \qed
 \end{proof}
+
+\subsection{Commutative data model}
 
 \subsection{Monoid data model}
 
