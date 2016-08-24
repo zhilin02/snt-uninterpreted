@@ -39,19 +39,19 @@
 \newcommand{\zhilin}[1]{\color{cyan} {ZL: #1 :LZ} \color{black}}
 \newcommand{\tl}[1]{\color{green} {TL: #1 :LT} \color{black}}
 
-\title{Streaming data transducer}
+\title{Streaming data transducers}
 \titlerunning{}
 \author{}
 \institute{}
 
-%\author{Yu-Fang Chen, Lei Song, Zhilin Wu}
+\author{Taolue Chen, Yu-Fang Chen, Anthony Widjaja Lin, Zhilin Wu}
 \begin{document}
 
 \maketitle
 
 
 \begin{abstract}
-In this note, as a starting point, we try to outline a model called streaming data transducers, which on the one hand ignores the guards in the corresponding model introduced in the cav paper, and on the other hand extends the model of streaming numerical transducers in the cav paper by introducing data grammars and data models. The resulting model can be seen as an extension of the model of cost register automata (Rajeev Alur, Loris D'Antoni, Jyotirmoy Deshmukh, Mukund Raghothaman,  and Yifei Yuan, LICS 2013) to data words. The extension to include transition guards should be added in the near future.
+In this note, as a starting point, we define a model called streaming data transducers (SDT), which on the one hand ignores the guards in the corresponding model introduced in the cav paper, and on the other hand extends the model by introducing data grammars and data models. The SDT model can be seen as an extension of cost register automata (Rajeev Alur, Loris D'Antoni, Jyotirmoy Deshmukh, Mukund Raghothaman,  and Yifei Yuan, LICS 2013) to data words. The model presented here is tentative and presented just as a material for discussions and a catalyst for more interesting results in the near future.
 \end{abstract}
 
 
@@ -185,17 +185,22 @@ If there is data word $w$ such that $\Ss_1(w) \neq \Ss_2(w)$, then there is a da
 We then show the small path property for the equivalence problem.
 
 \begin{proposition}\label{prop-free-bnd}
-If there is data word $w$ such that $\Ss_1(w) \neq \Ss_2(w)$, then there is a data word $w'$ of length no greater than $2D_H |Z_1|  |Z_2| + \max(|Z_1|, |Z_2|)$  such that $\Ss_1(w') \neq \Ss_2(w')$.
+If there is data word $w$ such that $\Ss_1(w) \neq \Ss_2(w)$, then there is a data word $w'$ of length no greater than $h+(2D_H |Z_1|  |Z_2|)p$  such that $\Ss_1(w') \neq \Ss_2(w')$.
 \end{proposition}
 
 \begin{proof}
-Suppose that $w = d_1 \dots d_n$ is data word such that no two positions of $w$ hold the same data value and $\Ss_1(w) \neq \Ss_2(w)$. Without loss of generality, we assume that none of the data value occurring in $w$ is equal to a constant occurring in $\Ss_1$ or $\Ss_2$.  Note that $\Ss_1(w)$ and $\Ss_2(w)$ are terms labeled by the constants, the function symbol $f$, and the data values $d_1,\dots,d_n$. For each path $\pi \in \{l, r\}^+$ (where $l,r$ denote the left and right branch respectively), let $\Ss_1(w)[\pi]$ denote the label of the node of $\Ss_1(w)$ corresponding to $\pi$. Similarly for $\Ss_2(w)[\pi]$. Since $\Ss_1(w) \neq \Ss_2(w)$, there is a path $\pi \in \{l, r\}^+$ such that  $\Ss_1(w)[\pi] \neq \Ss_2(w)[\pi]$. This implies that one of $\Ss_1(w)[\pi]$ and $\Ss_2(w)[\pi]$ has to be some constant $c$ or some data value $d_i$. Without loss of generality, we assume that $\Ss_1(w)[\pi]$ satisfies this constraint.
+Suppose that $w = d_1 \dots d_n$ is data word such that $n > h+(2D_H |Z_1|  |Z_2|)p$, no two positions of $w$ hold the same data value, and $\Ss_1(w) \neq \Ss_2(w)$. Without loss of generality, we assume that none of the data values occurring in $w$ is equal to a constant occurring in $\Ss_1$ or $\Ss_2$.  Note that $\Ss_1(w)$ and $\Ss_2(w)$ are terms labeled by the constants, the function symbol $f$, and the data values $d_1,\dots,d_n$. For each path $\pi \in \{l, r\}^+$ (where $l,r$ denote the left and right branch respectively), let $\Ss_1(w)[\pi]$ denote the label of the node of $\Ss_1(w)$ corresponding to $\pi$. Similarly for $\Ss_2(w)[\pi]$. Since $\Ss_1(w) \neq \Ss_2(w)$, there are two maximal paths $\pi_1,\pi_2 \in \{l, r\}^+$ in $\Ss_1(w)$ and $\Ss_2(w)$ respectively such that $\pi_1$ is a prefix of $\pi_2$ and $\Ss_1(w)[\pi_1] \neq \Ss_2(w)[\pi_1]$, or $\pi_2$ is a prefix of $\pi_1$ and $\Ss_1(w)[\pi_2] \neq \Ss_2(w)[\pi_2]$. Without loss of generality, we assume that $\pi_1$ is a prefix of $\pi_2$ and $\Ss_1(w)[\pi_1] \neq \Ss_2(w)[\pi_1]$. 
+This implies that one of $\Ss_1(w)[\pi_1]$ has to be some constant $c$ or some data value $d_i$.
 
-Suppose by following the path $\pi$, the loop of $\Ss_1$ is iterated for $N \in \nat$ times.  Then the path $\pi$ can be divided into segments $\pi_{1,0}, \pi_{1,1}, \dots, \pi_{1,N}$, where $\pi_{1,0}$ is the path corresponding to the handle $H$, $\pi_{1,1},\dots, \pi_{1,N}$ correspond to the first, second, and $N$-th iteration of the loop. Similarly, by following the path $\pi$, there is $N' \le N$ such that the loop of $\Ss_2$ is iterated for $N'$ times. Then $\pi$ can also be divided into $\pi_{2,0}, \pi_{2,1},\dots, \pi_{2,N'}$, for $\Ss_2$.
 
-For each $1 \le j < N'$, define $\dif_{j}$ as $ (\sum \limits_{0 \le j' \le j} |\pi_{1,j'}|) - (\sum \limits_{0 \le j' \le j} |\pi_{2,j'}|) $. If $|\dif_j| > D_H$ ($|\dif_j|$ is the absolute value of $\dif_j$) for some $j < N'$, then return false ($\Ss_1$ and $\Ss_2$ are not equivalent). The reason is that in this case, we can let the variable $z_1 \in Z$  and $z_2 \in Z$ corresponding to the path $\pi_{1,0} \dots \pi_{1,j}$ and  $\pi_{2,0} \dots \pi_{2,j}$ in $\Ss_1$ and $\Ss_2$ respectively equal to $\eta_H(z_1)$ and $\eta_H(z_2)$, then the resulting two trees are different.
+Suppose on $w$, the loop of $\Ss_1$ (resp. $\Ss_2$) is iterated for $N \in \nat$ times.  Then the path $\pi_1$ can be divided into segments $\pi_{1,0}, \pi_{1,1}, \dots, \pi_{1,N}$, where $\pi_{1,N}$ is the path corresponding to the handle $H$, $\pi_{1,N-1}, \dots, \pi_{1,0}$ correspond to the first, second, and $N$-th iteration of the loop. Similarly $\pi_2$ can be divided into $\pi_{2,0}, \pi_{2,1}, \dots, \pi_{2,N}$. Moreover, the data word $w$ can also be divided into $w_0 w_1 \dots w_N$ such that $|w_0| = h$ and $|w_1|=\dots = |w_N|=p$.
 
-Otherwise, for each $j < N'$,  $\dif_j \le D_H$. For each $j < N$ (resp. $j < N'$), let $\var_{1,j} \in Z_1$ (resp. $\var_{2,j} \in Z_2$) denote the variable of $\Ss_1$ (resp. $\Ss_2$) corresponding to the path $\pi_{1,0} \dots \pi_{1,j}$ (resp. $\pi_{2,0} \dots \pi_{2,j}$) respectively. Let us consider the tuples $(\var_{1,j}, \var_{2,j}, \dif_j)$ for $j < N'$. Then these tuples belong to $Z_1 \times Z_2 \times [-D_H, D_H]$. If there are $j_1 < j_2 < N'$ such that $(\var_{1, j_1}, \var_{2, j_1}, \dif_{j_1}) = (\var_{1, j_2}, \var_{2, j_2}, \dif_{j_2})$, then let $N':= N' - (j_2 - j_1)$ and supress the segment $\pi_{1, j_1+1} \dots \pi_{1,j_2}$ from $\Ss_1(w)$ and   $\pi_{2, j_1+1} \dots \pi_{2,j_2}$ from $\Ss_2(w)$ respectively, so that the resulting pair of terms are still different. By doing this, we get a data word $w'$ of shorter length. We can repeat this process until for each $j_1 < j_2 < N'$, $(\var_{1, j_1}, \var_{2, j_1}, \dif_{j_1}) \neq (\var_{1, j_2}, \var_{2, j_2}, \dif_{j_2})$. In addition, we can shorten the segment $\pi_{1,N'+1}\dots \pi_{1, N}$ so that for each $N'+1 \le j_1 < j_2 < N$, $\var_{1,j_1} \neq \var_{1, j_2}$. By doing this, in the end, we get a data word $w'$ of length at most $2D_H |Z_1|  |Z_2| + \max(|Z_1|, |Z_2|)$.
+For each $1 \le j < N$, define $\dif_{j}$ as $ (\sum \limits_{0 \le j' \le j} |\pi_{1,j'}|) - (\sum \limits_{0 \le j' \le j} |\pi_{2,j'}|) $. 
+
+If $|\dif_j| > D_H$ ($|\dif_j|$ is the absolute value of $\dif_j$) for some $j < N$, then return false ($\Ss_1$ and $\Ss_2$ are not equivalent). The reason is that in this case, let $z_1 \in Z$  and $z_2 \in Z$ be the variable in the node $\pi_{1,0} \dots \pi_{1,j}$ of $\Ss_1(w)$ and  $\pi_{2,0} \dots \pi_{2,j}$ of $\Ss_2(w)$ respectively, that is, the value of the variable $z_1$ and $z_2$ are used in the $(N-j)$-th iteration of the loop in $\Ss_1$ and $\Ss_2$ respectively. Then we can replace the subterm rooted at $\pi_{1,0} \dots \pi_{1,j}$ by $\eta_H(z_1)$ in $\Ss_1(w)$, and the subterm rooted at $\pi_{2,0} \dots \pi_{2,j}$ by $\eta_H(z_2)$ in $\Ss_2(w)$, then the resulting two terms are still different, even we do some replacements in other places of the two trees, but without modifying the paths $\pi_{1,0} \dots \pi_{1, j}$  and $\pi_{2,0} \dots \pi_{2, j}$.  Let  $w' = w_0 w_{N-j} \dots w_N$. Then $\Ss_1(w') \neq \Ss_2(w')$, that is, we get a shorter data word witnessing the non-equivalence of $\Ss_1$ and $\Ss_2$.
+
+Otherwise, for each $j < N$,  $\dif_j \le D_H$. For each $j < N$, let $\var_{1,j} \in Z_1$ (resp. $\var_{2,j} \in Z_2$) denote the variable of $\Ss_1$ (resp. $\Ss_2$) corresponding to the path $\pi_{1,0} \dots \pi_{1,j}$ (resp. $\pi_{2,0} \dots \pi_{2,j}$) respectively. Let us consider the tuples $(\var_{1,j}, \var_{2,j}, \dif_j)$ for $j < N$. Then these tuples belong to $Z_1 \times Z_2 \times [-D_H, D_H]$. Since $n  > h+(2D_H |Z_1|  |Z_2|)p$,  we know that $N > 2D_H |Z_1|  |Z_2|$. 
+Then there must be $0 \le j_1 < j_2 < N$ such that $(\var_{1, j_1}, \var_{2, j_1}, \dif_{j_1}) = (\var_{1, j_2}, \var_{2, j_2}, \dif_{j_2})$. We can shrink the segment $\pi_{1, j_1+1} \dots \pi_{1,j_2}$ from $\Ss_1(w)$ and   $\pi_{2, j_1+1} \dots \pi_{2,j_2}$ from $\Ss_2(w)$ respectively, so that the resulting pair of terms are still different. Let $w' = w_0 w_1 \dots w_{N-j_2-1} w_{N- j_1} \dots w_N$. Then we get a data word $w'$ of shorter length witnessing the non-equivalence of $\Ss_1$ and $\Ss_2$. 
 \qed
 \end{proof}
 
