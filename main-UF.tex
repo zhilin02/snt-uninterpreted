@@ -31,6 +31,10 @@
 \newcommand\Ss{\mathcal{S}}
 
 
+\newcommand\vard{\mathfrak{d}}
+
+
+
 \newcommand{\yfc}[1]{\color{blue} {YF: #1 :FY} \color{black}}
 \newcommand{\zhilin}[1]{\color{cyan} {ZL: #1 :LZ} \color{black}}
 \newcommand{\tl}[1]{\color{green} {TL: #1 :LT} \color{black}}
@@ -57,6 +61,8 @@ In this note, as a starting point, we try to outline a model called streaming da
 %\begin{remark}
 {\bf Warning}: Most of the notations are adapted from those of cost register automata \cite{ADD+13}.
 %\end{remark}
+
+For each $n \in \nat$, let $[n]=\{1,\dots, n\}$.
 
 An infinite data domain $\dd$ is fixed.
 A ranked alphabet $F$ is a finite set of function symbols, each of which has a fixed arity. The arity-0 symbols are called constants, are mapped to the elements in the data domain. Since infinite data domains are allowed, we need a way of encoding the constants as strings a finite set of symbols (e.g. \{0,1\}), but we will not go into details here. In addition, we assume a  countable set $X$ of variables $x_1, x_2,\dots$ ranging over $\dd$.  The set of terms over $F$ and a set of variables $Z \subseteq X$, denoted by $T_{F, Z}$, can defined in a standard way, more specifically, by the grammar $t::= c \mid z  \mid f(t_1,\dots, t_k)$, where $c$ is a constant symbol in $F$, $z \in Z$, and $f \in F$ is a function symbol in $F$ of arity $k$. A \emph{data grammar} $G$ is a pair $(F, T)$, where $F$ is a ranked alphabet, $T \subseteq T_{F,X}$ such that for each finite set of variables $Z \subseteq X$, $T \cap T_{F, Z}$ is a regular tree language over the alphabet $F \cup Z$, where each element of $Z$ is taken as the arity-0 symbols.  For convenience, for a set of terms $T \subseteq T_{F,X}$ and $Z \subseteq X$, we use $T \vert_Z$ to denote $T \cap T_{F,Z}$.  For $Z \subseteq X$, a \emph{valuation} of $Z$ is a function $\rho$ from $Z$ to $\dd$. 
@@ -142,7 +148,7 @@ Since the commutativity problem of SDTs can be reduced the equivalence problem, 
 
 We will try to get some idea on the equivalence problem by considering the special case that the cost grammar $G=(F,T)$, where $F=\{f\}$, where $f$ is an arity-2 function symbol and $T = T_{F,X}$. We will consider free data model where $f$ is an arbitrary binary function on $\dd$, the monoid and commutative-monoid data model, that is, $(\dd, 0, f)$ is a monoid resp. commutative monoid.
 
-Suppose $(G, \dd, \llbracket \cdot \rrbracket)$ is cost model, $\Ss_1 = (Q_1, \delta_1, q_{1,0}, O_1)$ and $\Ss_2 = (Q_2, \delta_2, q_{2,0}, O_2)$ are two SDTs over $(G, \dd, \llbracket \cdot \rrbracket)$. Without loss of generality, we assume that for $i=1,2$, the transition graph of $\Ss_i$ is a lasso 
+Suppose $(G, \dd, \llbracket \cdot \rrbracket)$ is cost model, $\Ss_1 = (Q_1, Z_1, \delta_1, q_{1,0}, O_1)$ and $\Ss_2 = (Q_2, Z_2, \delta_2, q_{2,0}, O_2)$ are two SDTs over $(G, \dd, \llbracket \cdot \rrbracket)$. Without loss of generality, we assume that for $i=1,2$, the transition graph of $\Ss_i$ is a lasso 
 $$q_{i,0} \xrightarrow{\eta_{i,1}} q_{i, 1}  \dots q_{i, h_i} \xrightarrow{\eta_{i, h_i+1}} q_{i, h_i+1} \dots \xrightarrow{\eta_{i, h_i+p_i}} q_{i, h_i+p_i}$$ 
 such that $q_{i, h_i+p_i}= q_{i, h_i}$. The path $q_{i,0} \xrightarrow{\eta_{i,1}} q_{i, 1}  \dots q_{i, h_i}$ is called the \emph{handle} and $q_{i, h_i} \xrightarrow{\eta_{i, h_i+1}} q_{i, h_i+1} \dots \xrightarrow{\eta_{i, h_i+p_i}} q_{i, h_i+p_i}$ is called the \emph{loop} of the lasso. In addition, $h_i$ and $p_i$ are called the length of the handle and loop respectively.
 
@@ -155,9 +161,14 @@ $q_{2,0} \xrightarrow{\eta_{1,1}} q_{2, 1}  \xrightarrow{\eta_{2,2}} q_{2, 2} \x
 
 Therefore, in the rest of this section, we assume that the two transition graphs of $\Ss_1$ and $\Ss_2$ have the same shape, that is, $h_1 = h_2 = h$ and $p_1 = p_2 = p$. Moreover, we use $H_1, L_1$ and $H_2,L_2$ to denote the handle and loop of $\Ss_1$ and $\Ss_2$ respectively.
 
+Without loss of generality, we assume that $Z_1 \cap Z_2 = \emptyset$, $Z_1 = \{z_1, \dots, z_{k_1}\}$ and $Z_2 = \{z'_1,\dots, z'_{k_2}\}$. Let $\Ss$ be the product of $\Ss_1$ and $\Ss_2$, ignoring the output function, that is, $\Ss=(Q= Q_1 \times Q_2, Z= Z_1 \cup Z_2, \delta, (q_{1,0}, q_{2,0}))$ where for each $(q_1,q_2) \in Q_1 \times Q_2$, if $\delta(q_1)=(q'_1,\eta_1)$ and $\delta(q_2)=(q'_2, \eta_2)$, then $\delta(q_1, q_2)=((q'_1,q'_2), \eta_1 \cup \eta_2)$. Note that since the transition graphs of $\Ss_1$ and $\Ss_2$ have the same shape, we know that the transition graph of $\Ss$ is also a lasso whose handle and loop are of the length $h$ and $p$ respectively. We use $H$ and $L$ to denote the handle and loop of $\Ss$.
+
+We illustrate the argument by considering the special case that $O_1(q_{1,h})=z_1$, $O_2(q_{2,h})=z'_1$, and $O_1(q'_1)$ and $O_2(q'_2)$ are undefined  for all the other states $q'_1  \in Q_1$ and $q'_2 \in Q_2$.
+
+ 
 \subsection{Free data model}
 
-
+\hide{
 For $i=1,2$, define 
 $$I_{\Ss_i} = \{j \mid 1 \le j \le h, q_{i,j} \in \dom(O) \} \cup \{h + n p + j \mid n \in \nat, 0 \le j < p, q_{i, h+j} \in \dom(O)\}.$$
 
@@ -166,19 +177,41 @@ $$I_{\Ss_i} = \{j \mid 1 \le j \le h, q_{i,j} \in \dom(O) \} \cup \{h + n p + j 
 \noindent {\bf Step I}: If $I_{\Ss_1} \neq I_{\Ss_2}$, then return false. Otherwise, go to Step II.
 
 \smallskip
-
-\noindent {\bf Step II}: Decide whether the handle $H_1$ and $H_2$ are already able to differentiate between $\Ss_1$ and $\Ss_2$. If $\Ss_1$ and $\Ss_2$ produces different outputs in the handles, then return false. Otherwise, go to Step III.
-
-\smallskip
-
-The goal of Step III is to decide whether $\Ss_1$ and $\Ss_2$ can be differentiated by iterating the cycle. We will illustrate the argument by considering the special case that $O_1(q_{1,h})$ and $O_2(q_{2,h})$ are defined, but $O_1(q'_1)$ and $O_2(q'_2)$ are undefined  for all the other states $q'_1  \in Q_1$ and $q'_2 \in Q_2$.
+}
 
 
-\smallskip
+We will show that if there is data word $w$ such that $\Ss_1(w) \neq \Ss_2(w)$, then there is a data word $w'$ of bounded length such that $\Ss_1(w') \neq \Ss_2(w')$.
 
-\noindent {\bf Step III}: 
+The effect of the handle $H$ on each $z \in Z$ can be summarized by an expression $\eta_H(z)$ which is a term where the variables from $Z_1 \cup Z_2 \cup \{\vard_1,\dots, \vard_h\}$ occur, where $\vard_1,\dots, \vard_h$ are $h$ fresh variables introduced to represent the $h$ data values met when traversing the handle.  Let $D_H = \max_{z \in Z} {\sf depth}(\eta_H(z))$, where ${\sf depth}(\eta_H(z))$ denote the  maximum length of paths in the term $\eta_H(z)$.
 
+At first, we observe the following fact.
 
+\begin{proposition}\label{prop-distinct}
+If there is data word $w$ such that $\Ss_1(w) \neq \Ss_2(w)$, then there is a data word $w'$ such that  no two positions of $w'$ hold the same data value and $\Ss_1(w') \neq \Ss_2(w')$.
+\end{proposition}
+
+\newcommand\node{{\sf Node}}
+
+\newcommand\dif{{\sf DIF}}
+
+\newcommand\var{{\sf var}}
+
+We then show the small path property for the equivalence problem.
+
+\begin{proposition}\label{prop-free-bnd}
+If there is data word $w$ such that $\Ss_1(w) \neq \Ss_2(w)$, then there is a data word $w'$ of length no greater than $2D_H |Z_1|  |Z_2| + \max(|Z_1|, |Z_2|)$  such that $\Ss_1(w') \neq \Ss_2(w')$.
+\end{proposition}
+
+\begin{proof}
+Suppose that $w = d_1 \dots d_n$ is data word such that no two positions of $w$ hold the same data value and $\Ss_1(w) \neq \Ss_2(w)$. Without loss of generality, we assume that none of the data value occurring in $w$ is equal to a constant occurring in $\Ss_1$ or $\Ss_2$.  Note that $\Ss_1(w)$ and $\Ss_2(w)$ are terms labeled by the constants, the function symbol $f$, and the data values $d_1,\dots,d_n$. For each path $\pi \in \{l, r\}^+$ (where $l,r$ denote the left and right branch respectively), let $\Ss_1(w)[\pi]$ denote the label of the node of $\Ss_1(w)$ corresponding to $\pi$. Similarly for $\Ss_2(w)[\pi]$. Since $\Ss_1(w) \neq \Ss_2(w)$, there is a path $\pi \in \{l, r\}^+$ such that  $\Ss_1(w)[\pi] \neq \Ss_2(w)[\pi]$. This implies that one of $\Ss_1(w)[\pi]$ and $\Ss_2(w)[\pi]$ has to be some constant $c$ or some data value $d_i$. Without loss of generality, we assume that $\Ss_1(w)[\pi]$ satisfies this constraint.
+
+Suppose by following the path $\pi$, the loop of $\Ss_1$ is iterated for $N \in \nat$ times.  Then the path $\pi$ can be divided into segments $\pi_{1,0}, \pi_{1,1}, \dots, \pi_{1,N}$, where $\pi_{1,0}$ is the path corresponding to the handle $H$, $\pi_{1,1},\dots, \pi_{1,N}$ correspond to the first, second, and $N$-th iteration of the loop. Similarly, by following the path $\pi$, there is $N' \le N$ such that the loop of $\Ss_2$ is iterated for $N'$ times. Then $\pi$ can also be divided into $\pi_{2,0}, \pi_{2,1},\dots, \pi_{2,N'}$, for $\Ss_2$.
+
+For each $1 \le j < N'$, define $\dif_{j}$ as $ (\sum \limits_{0 \le j' \le j} |\pi_{1,j'}|) - (\sum \limits_{0 \le j' \le j} |\pi_{2,j'}|) $. If $|\dif_j| > D_H$ ($|\dif_j|$ is the absolute value of $\dif_j$) for some $j < N'$, then return false ($\Ss_1$ and $\Ss_2$ are not equivalent). The reason is that in this case, we can let the variable $z_1 \in Z$  and $z_2 \in Z$ corresponding to the path $\pi_{1,0} \dots \pi_{1,j}$ and  $\pi_{2,0} \dots \pi_{2,j}$ in $\Ss_1$ and $\Ss_2$ respectively equal to $\eta_H(z_1)$ and $\eta_H(z_2)$, then the resulting two trees are different.
+
+Otherwise, for each $j < N'$,  $\dif_j \le D_H$. For each $j < N$ (resp. $j < N'$), let $\var_{1,j} \in Z_1$ (resp. $\var_{2,j} \in Z_2$) denote the variable of $\Ss_1$ (resp. $\Ss_2$) corresponding to the path $\pi_{1,0} \dots \pi_{1,j}$ (resp. $\pi_{2,0} \dots \pi_{2,j}$) respectively. Let us consider the tuples $(\var_{1,j}, \var_{2,j}, \dif_j)$ for $j < N'$. Then these tuples belong to $Z_1 \times Z_2 \times [-D_H, D_H]$. If there are $j_1 < j_2 < N'$ such that $(\var_{1, j_1}, \var_{2, j_1}, \dif_{j_1}) = (\var_{1, j_2}, \var_{2, j_2}, \dif_{j_2})$, then let $N':= N' - (j_2 - j_1)$ and supress the segment $\pi_{1, j_1+1} \dots \pi_{1,j_2}$ from $\Ss_1(w)$ and   $\pi_{2, j_1+1} \dots \pi_{2,j_2}$ from $\Ss_2(w)$ respectively, so that the resulting pair of terms are still different. By doing this, we get a data word $w'$ of shorter length. We can repeat this process until for each $j_1 < j_2 < N'$, $(\var_{1, j_1}, \var_{2, j_1}, \dif_{j_1}) \neq (\var_{1, j_2}, \var_{2, j_2}, \dif_{j_2})$. In addition, we can shorten the segment $\pi_{1,N'+1}\dots \pi_{1, N}$ so that for each $N'+1 \le j_1 < j_2 < N$, $\var_{1,j_1} \neq \var_{1, j_2}$. By doing this, in the end, we get a data word $w'$ of length at most $2D_H |Z_1|  |Z_2| + \max(|Z_1|, |Z_2|)$.
+\qed
+\end{proof}
 
 \subsection{Monoid data model}
 
