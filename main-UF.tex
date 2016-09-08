@@ -204,7 +204,34 @@ Then there must be $0 \le j_1 < j_2 < N$ such that $(\var_{1, j_1}, \var_{2, j_1
 \qed
 \end{proof}
 
+
 \subsection{Commutative data model}
+
+
+\subsection{Reduction to two-player reachability games: free data model and commutative data model}
+
+Let us use the following example to illustrate the idea.
+
+Let $\Ss_1$ and $\Ss_2$ be two SDTs such that they are self-loops around $q_1$ and $q_2$ with the transitions 
+$\left(\begin{array}{l c l} x_1 &=& f(x_3, x_2) \\ x_2 &=& f(1, x_1) \\ x_3 &=& f(2, x_1) \end{array}\right)$
+and
+$\left(\begin{array}{l c l} y_1 &=& f(y_2, y_3) \\ y_2 &=& f(1,y_1) \\ y_3 &=& f(2, y_1)\end{array}\right)$
+respectively. In addition, let $O(q_1)=x_1$ and $O(q_2)=y_1$. We assume that the initial values of all the variables are the constant $0$. Then the equivalence of $\Ss_1$ and $\Ss_2$ is reduced to a two-player reachability game $(V_1, V_2, E)$ illustrated in Fig.~\ref{fig-equiv-to-game}, where the goal of Player 1 is to defend the fact that for each data word $w$, the run of $\Ss_1$ and $\Ss_2$ on $w$ produce the same output (that is, $x_1$ and $y_1$ have the same value) and the goal of Player 2 is to attack this fact. It is easy to see that Player 2 has a winning strategy starting from $(x_1, y_1)$.
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.9]{game.pdf}
+\end{center}
+\caption{From equivalence to two-player reachability game: Free data model}\label{fig-equiv-to-game}
+\end{figure}
+
+If we assume that $f$ is commutative, then we can reduce the equivalence of $\Ss_1$ and $\Ss_2$ to another two-player reachability game illustrated in Fig.~\ref{fig-equiv-to-game-com}. It is easy to see that Player 1 has a winning strategy starting from $(x_1, y_1)$.
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.9]{game-com.pdf}
+\end{center}
+\caption{From equivalence to two-player reachability game: Commutative data model}\label{fig-equiv-to-game-com}
+\end{figure}
+
 
 \subsection{Monoid data model}
 
